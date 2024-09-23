@@ -4,7 +4,7 @@
 \alias{LRRelev}
 \title{LRRelev}
 \usage{
-LRRelev(data, sample, group, taxa, otus, threshold = 2)
+LRRelev(data, sample, group, taxa, otus, threshold = 2, cores = NULL)
 }
 \arguments{
 \item{data}{data with counts with OTUs in the columns and samples in rows}
@@ -18,6 +18,8 @@ LRRelev(data, sample, group, taxa, otus, threshold = 2)
 \item{otus}{a vector with the name of each OTUS}
 
 \item{threshold}{minimum count for the OTU entered for comparison}
+
+\item{cores}{a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used}
 }
 \value{
 \code{data1Imp} data with imputed zeros
@@ -33,6 +35,8 @@ parallel logarithmic ratios
 }
 \examples{
 data(HIV)
-output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV, taxa = colnames(x_HIV),otus = colnames(x_HIV))
+output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
+ taxa = colnames(x_HIV),otus = colnames(x_HIV), cores=2)
+
 
 }

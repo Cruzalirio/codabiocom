@@ -4,12 +4,14 @@
 \alias{calcAUClr}
 \title{calcAUClr}
 \usage{
-calcAUClr(data, group)
+calcAUClr(data, group, cores = NULL)
 }
 \arguments{
 \item{data}{abundance matrix or data frame (rows are samples, columns are variables (taxa))}
 
 \item{group}{a vector with the sample groups}
+
+\item{cores}{a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used}
 }
 \value{
 \code{res} the upper triangular of AUC between OTUS
@@ -19,6 +21,6 @@ parallel AUC for data
 }
 \examples{
 data(HIV)
-AUC <- calcAUClr(x_HIV, y_HIV)
-AUC$`association log-ratio with y`
+AUC <- calcAUClr(x_HIV, y_HIV, cores=2)
+AUC[1:10,1:10]
 }

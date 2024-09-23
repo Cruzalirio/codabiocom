@@ -4,11 +4,12 @@
 #'
 #' @param data abundance matrix or data frame (rows are samples, columns are variables (taxa))
 #' @param group a vector with the sample groups
+#' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
 #' @return \code{res} the upper triangular of AUC between OTUS
 #' @examples
 #' data(HIV)
-#' AUC <- calcAUClr(x_HIV, y_HIV)
-#' AUC$`association log-ratio with y`
+#' AUC <- calcAUClr(x_HIV, y_HIV, cores=2)
+#' AUC[1:10,1:10]
 #' @export
 #' @importFrom coda4microbiome impute_zeros
 #' @importFrom parallel makeCluster detectCores stopCluster
@@ -18,9 +19,11 @@
 
 
 
-calcAUClr <- function(data, group){
+calcAUClr <- function(data, group, cores=NULL){
   # cores <- parallel::makeCluster(parallel::detectCores()-1, type='PSOCK') # grabs max available
-  cores <- parallel::detectCores()-1
+  if(is.null(cores)){
+    cores <- parallel::detectCores()-1
+  }
   #cl <- parallel::makeCluster(getOption('cl.cores', cores))
   cl <- parallel::makePSOCKcluster(cores)
   doParallel::registerDoParallel(cl)

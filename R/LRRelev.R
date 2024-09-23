@@ -8,13 +8,16 @@
 #' @param otus a vector with the name of each OTUS
 #' @param sample name of each sample
 #' @param threshold minimum count for the OTU entered for comparison
+#' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
 #' @return \code{data1Imp} data with imputed zeros
 #' @return \code{OTUS} a dataframe with otus and their association index Cesc calculate
 #' @return \code{Misery} a list of OTUS with counts less than the threshold
 #' @return \code{uniqueOTUS} a list of OTUS with counts only in one sample
 #' @examples
 #' data(HIV)
-#' output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV, taxa = colnames(x_HIV),otus = colnames(x_HIV))
+#' output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
+#'  taxa = colnames(x_HIV),otus = colnames(x_HIV), cores=2)
+#'
 #'
 #' @export
 #'
@@ -22,7 +25,7 @@
 
 
 
-LRRelev <- function (data, sample, group, taxa, otus,  threshold=2){
+LRRelev <- function (data, sample, group, taxa, otus,  threshold=2, cores=NULL){
   #data = data.frame(data)
   # Delete OTUS with total count less of umbral
   Misery <- as.vector(which(colSums(data)<=threshold))
@@ -51,7 +54,7 @@ LRRelev <- function (data, sample, group, taxa, otus,  threshold=2){
   }
   data1ZI = zCompositions::cmultRepl(data2, method="GBM",output="p-counts",
                                      suppress.print=TRUE,z.warning=0.99)
-  res <- codabiocom::calcAUClr(data1ZI,group)
+  res <- codabiocom::calcAUClr(data1ZI,group, cores)
   res[lower.tri(res) ] <- t(res)[lower.tri(res) ]
   o <- order(colSums(abs(res)), decreasing = TRUE)
   M <- res[o, o]
