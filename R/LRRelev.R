@@ -1,0 +1,68 @@
+#' @title LRRelev
+#' @description
+#' parallel logarithmic ratios
+#'
+#' @param data data with counts with OTUs in the columns and samples in rows
+#' @param group a vector with the sample groups
+#' @param taxa a vector with the taxon classification of each OTU
+#' @param otus a vector with the name of each OTUS
+#' @param samples name of each sample
+#' @param threshold minimum count for the OTU entered for comparison
+#' @return \code{data1Imp} data with imputed zeros
+#' @return \code{OTUS} a dataframe with otus and their association index Cesc calculate
+#' @return \code{Misery} a list of OTUS with counts less than the threshold
+#' @return \code{uniqueOTUS} a list of OTUS with counts only in one sample
+#' @examples
+#' data(HIV)
+#' output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV, taxa = colnames(x_HIV),otus = colnames(x_HIV))
+#'
+#' @export
+#'
+#' @importFrom zCompositions  cmultRepl
+
+
+
+LRRelev <- function (data, sample, group, taxa, otus,  threshold=2){
+  #data = data.frame(data)
+  # Delete OTUS with total count less of umbral
+  Misery <- as.vector(which(colSums(data)<=threshold))
+  if(length(Misery)>0){
+    data1 <- data[,-Misery]
+    taxa1 <- taxa[-Misery]
+    otus1 <- otus[-Misery]
+  }else{
+    data1 <- data
+    taxa1 <- taxa
+    otus1 <- otus
+  }
+  # Delete OTUS whic appears only in an Sample
+  hit <- function(x){min(c(x,1))}
+  data0 <- as.matrix(data1)
+  data0[] <- vapply(data0, hit, numeric(1))
+  uniqueOTUS <- which(colSums(data0)==1)
+  if(length(uniqueOTUS)>0){
+    data2 <- data1[,-uniqueOTUS]
+    taxa2 <- taxa1[-uniqueOTUS]
+    otus2 <- otus1[-uniqueOTUS]
+  }else{
+    data2 <- data1
+    taxa2 <- taxa1
+    otus2 <- otus1
+  }
+  data1ZI = zCompositions::cmultRepl(data2, method="GBM",output="p-counts",
+                                     suppress.print=TRUE,z.warning=0.99)
+  LRS <- codabiocom::calcAUClr(data1ZI,group)
+  assoc <- rep(0,ncol(data1ZI))
+  for (m in 1:ncol(data1ZI)){
+    assoc[m] <- sum(LRS$`association log-ratio with y`[1:m,1:m])/m^2
+  }
+  maxim <- which.max(assoc)
+  LRImp <- sort(as.numeric(LRS$`order of importance`[1:maxim]))
+  data1Imp <- data1ZI[,LRImp]
+  return(list(dataImp = data1Imp,
+              OTUS = data.frame(otus=otus[LRS$`order of importance`],
+                                assoc = assoc),
+              Misery =otus[Misery], uniqueOTUS = otus1[uniqueOTUS]))
+}
+
+
