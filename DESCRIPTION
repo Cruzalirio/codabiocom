@@ -2,9 +2,8 @@ Package: codabiocom
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author@R: c(person("Nelson Alirio", "Cruz Gutierrez", 
-                role = c("aut", "cre","cph"), email = "nealson-alirio@uib.es"))
-Maintainer: The package maintainer <yourself@somewhere.net>
+Author: Nelson Alirio Cruz Gutierrez <nealson-alirio@uib.es>
+Maintainer: Nelson Alirio Cruz Gutierrez <nealson-alirio@uib.es>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: GPL (>= 3)
@@ -13,9 +12,11 @@ LazyData: true
 RoxygenNote: 7.3.2
 Depends: 
     R (>= 4.0.0)
-Imports: 
+Imports:
     doParallel,
     foreach,
     parallel,
     coda4microbiome,
-    pROC
+    pROC,
+    zCompositions
+    

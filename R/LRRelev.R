@@ -6,7 +6,7 @@
 #' @param group a vector with the sample groups
 #' @param taxa a vector with the taxon classification of each OTU
 #' @param otus a vector with the name of each OTUS
-#' @param samples name of each sample
+#' @param sample name of each sample
 #' @param threshold minimum count for the OTU entered for comparison
 #' @return \code{data1Imp} data with imputed zeros
 #' @return \code{OTUS} a dataframe with otus and their association index Cesc calculate
@@ -51,7 +51,20 @@ LRRelev <- function (data, sample, group, taxa, otus,  threshold=2){
   }
   data1ZI = zCompositions::cmultRepl(data2, method="GBM",output="p-counts",
                                      suppress.print=TRUE,z.warning=0.99)
-  LRS <- codabiocom::calcAUClr(data1ZI,group)
+  res <- codabiocom::calcAUClr(data1ZI,group)
+  res[lower.tri(res) ] <- t(res)[lower.tri(res) ]
+  o <- order(colSums(abs(res)), decreasing = TRUE)
+  M <- res[o, o]
+  maxrow <- ncol(M)
+  colnames(M) <- o
+  rownames(M) <- colnames(M)
+  LRS <- list(`max log-ratio` = colnames(M)[which(M == max(abs(M)),
+                                                      arr.ind = TRUE)[(2:1)]],
+                  `names max log-ratio` = colnames(data)[as.numeric(colnames(M)[which(M == max(abs(M)),
+                                                                                      arr.ind = TRUE)[(2:1)]])],
+                  `order of importance` = o,
+                  `name of most important variables` = colnames(data)[o[1:maxrow]],
+                  `association log-ratio with y` = M)
   assoc <- rep(0,ncol(data1ZI))
   for (m in 1:ncol(data1ZI)){
     assoc[m] <- sum(LRS$`association log-ratio with y`[1:m,1:m])/m^2

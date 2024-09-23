@@ -9,6 +9,8 @@ LRRelev(data, sample, group, taxa, otus, threshold = 2)
 \arguments{
 \item{data}{data with counts with OTUs in the columns and samples in rows}
 
+\item{sample}{name of each sample}
+
 \item{group}{a vector with the sample groups}
 
 \item{taxa}{a vector with the taxon classification of each OTU}
@@ -16,8 +18,6 @@ LRRelev(data, sample, group, taxa, otus, threshold = 2)
 \item{otus}{a vector with the name of each OTUS}
 
 \item{threshold}{minimum count for the OTU entered for comparison}
-
-\item{samples}{name of each sample}
 }
 \value{
 \code{data1Imp} data with imputed zeros

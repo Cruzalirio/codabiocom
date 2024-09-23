@@ -12,15 +12,7 @@ calcAUClr(data, group)
 \item{group}{a vector with the sample groups}
 }
 \value{
-\code{max log-ratio}
-
-\code{names max log-ratio}
-
-\code{order of importance}
-
-\code{name of most important variables}
-
-\code{"association log-ratio with y}
+\code{res} the upper triangular of AUC between OTUS
 }
 \description{
 parallel AUC for data
