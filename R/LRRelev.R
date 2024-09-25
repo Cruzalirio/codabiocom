@@ -7,6 +7,7 @@
 #' @param taxa a vector with the taxon classification of each OTU
 #' @param otus a vector with the name of each OTUS
 #' @param sample name of each sample
+#' @param binary \code{logical} TRUE if group are binary, FALSE if group are multinomial
 #' @param threshold minimum count for the OTU entered for comparison
 #' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
 #' @return \code{data1Imp} data with imputed zeros
@@ -17,7 +18,7 @@
 #' @examples
 #' data(HIV)
 #' output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
-#'  taxa = colnames(x_HIV),otus = colnames(x_HIV), cores=2)
+#'  taxa = colnames(x_HIV),otus = colnames(x_HIV),binary=TRUE , cores=2)
 #'
 #'
 #' @export
@@ -26,7 +27,7 @@
 
 
 
-LRRelev <- function (data, sample, group, taxa, otus,  threshold=2, cores=NULL){
+LRRelev <- function (data, sample, group, taxa, otus, binary=TRUE,  threshold=2, cores=NULL){
   #data = data.frame(data)
   # Delete OTUS with total count less of umbral
   Misery <- as.vector(which(colSums(data)<=threshold))

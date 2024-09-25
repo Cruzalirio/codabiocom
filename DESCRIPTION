@@ -1,7 +1,7 @@
 Package: codabiocom
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.0
+Version: 0.2.0
 Author: Nelson Alirio Cruz Gutierrez <nealson-alirio@uib.es>
 Maintainer: Nelson Alirio Cruz Gutierrez <nealson-alirio@uib.es>
 Description: More about what it does (maybe more than one line)
@@ -18,5 +18,6 @@ Imports:
     parallel,
     coda4microbiome,
     pROC,
-    zCompositions
-    
+    zCompositions,
+    nnet,
+    HandTill2001

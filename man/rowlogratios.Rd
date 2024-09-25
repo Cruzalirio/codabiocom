@@ -4,7 +4,7 @@
 \alias{rowlogratios}
 \title{rowlogratios}
 \usage{
-rowlogratios(data, col, group)
+rowlogratios(data, col, group, binary = TRUE)
 }
 \arguments{
 \item{data}{data with counts with OTUs in the columns and samples in rows}
@@ -12,6 +12,8 @@ rowlogratios(data, col, group)
 \item{col}{the number of column for calculate the logratios}
 
 \item{group}{a vector with the sample groups}
+
+\item{binary}{\code{logical} TRUE if group are binary, FALSE if group are multinomial}
 }
 \value{
 \code{matlrAUC} A vector of size \eqn{1\times n} with the OTU's attainments in the given column

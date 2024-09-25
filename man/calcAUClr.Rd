@@ -4,7 +4,7 @@
 \alias{calcAUClr}
 \title{calcAUClr}
 \usage{
-calcAUClr(data, group, cores = NULL)
+calcAUClr(data, group, cores = NULL, binary = TRUE)
 }
 \arguments{
 \item{data}{abundance matrix or data frame (rows are samples, columns are variables (taxa))}
@@ -12,6 +12,8 @@ calcAUClr(data, group, cores = NULL)
 \item{group}{a vector with the sample groups}
 
 \item{cores}{a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used}
+
+\item{binary}{\code{logical} TRUE if group are binary, FALSE if group are multinomial}
 }
 \value{
 \code{res} the upper triangular of AUC between OTUS

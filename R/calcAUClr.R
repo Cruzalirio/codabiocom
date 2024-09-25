@@ -6,6 +6,8 @@
 #' @param group a vector with the sample groups
 #' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
 #' @return \code{res} the upper triangular of AUC between OTUS
+#' @param binary \code{logical} TRUE if group are binary, FALSE if group are multinomial
+#'
 #' @examples
 #' data(HIV)
 #' AUC <- calcAUClr(x_HIV, y_HIV, cores=2)
@@ -19,7 +21,7 @@
 
 
 
-calcAUClr <- function(data, group, cores=NULL){
+calcAUClr <- function(data, group, cores=NULL, binary=TRUE){
   # cores <- parallel::makeCluster(parallel::detectCores()-1, type='PSOCK') # grabs max available
   if(is.null(cores)){
     cores <- parallel::detectCores()-1

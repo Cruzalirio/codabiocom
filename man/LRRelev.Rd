@@ -4,7 +4,16 @@
 \alias{LRRelev}
 \title{LRRelev}
 \usage{
-LRRelev(data, sample, group, taxa, otus, threshold = 2, cores = NULL)
+LRRelev(
+  data,
+  sample,
+  group,
+  taxa,
+  otus,
+  binary = TRUE,
+  threshold = 2,
+  cores = NULL
+)
 }
 \arguments{
 \item{data}{data with counts with OTUs in the columns and samples in rows}
@@ -16,6 +25,8 @@ LRRelev(data, sample, group, taxa, otus, threshold = 2, cores = NULL)
 \item{taxa}{a vector with the taxon classification of each OTU}
 
 \item{otus}{a vector with the name of each OTUS}
+
+\item{binary}{\code{logical} TRUE if group are binary, FALSE if group are multinomial}
 
 \item{threshold}{minimum count for the OTU entered for comparison}
 
@@ -38,7 +49,7 @@ parallel logarithmic ratios
 \examples{
 data(HIV)
 output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
- taxa = colnames(x_HIV),otus = colnames(x_HIV), cores=2)
+ taxa = colnames(x_HIV),otus = colnames(x_HIV),binary=TRUE , cores=2)
 
 
 }
