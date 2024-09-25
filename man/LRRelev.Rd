@@ -29,6 +29,8 @@ LRRelev(data, sample, group, taxa, otus, threshold = 2, cores = NULL)
 \code{Misery} a list of OTUS with counts less than the threshold
 
 \code{uniqueOTUS} a list of OTUS with counts only in one sample
+
+\code{AUCs} The matrix of AUCs by OTUS
 }
 \description{
 parallel logarithmic ratios

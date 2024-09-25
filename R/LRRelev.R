@@ -13,6 +13,7 @@
 #' @return \code{OTUS} a dataframe with otus and their association index Cesc calculate
 #' @return \code{Misery} a list of OTUS with counts less than the threshold
 #' @return \code{uniqueOTUS} a list of OTUS with counts only in one sample
+#' @return \code{AUCs} The matrix of AUCs by OTUS
 #' @examples
 #' data(HIV)
 #' output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
@@ -78,7 +79,8 @@ LRRelev <- function (data, sample, group, taxa, otus,  threshold=2, cores=NULL){
   return(list(dataImp = data1Imp,
               OTUS = data.frame(otus=otus[LRS$`order of importance`],
                                 assoc = assoc),
-              Misery =otus[Misery], uniqueOTUS = otus1[uniqueOTUS]))
+              Misery =otus[Misery], uniqueOTUS = otus1[uniqueOTUS],
+              AUCs = res))
 }
 
 
