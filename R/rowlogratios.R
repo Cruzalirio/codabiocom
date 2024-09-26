@@ -10,20 +10,21 @@
 #'@return \code{matlrAUC} A vector of size \eqn{1\times n} with the OTU's attainments in the given column
 #' @examples
 #' data(HIV)
-#' AUC <- rowlogratios(x_HIV, 2, y_HIV)
+#' x_HIVImp = zCompositions::cmultRepl(x_HIV, method="GBM",
+#' output="p-counts",suppress.print=TRUE,z.warning=0.99)
+#' AUC <- rowlogratios(x_HIVImp, 2, y_HIV)
 #' AUC[1:10]
 #'
 #' @export
 #' @importFrom pROC auc roc
-#' @importFrom coda4microbiome impute_zeros
 #' @importFrom HandTill2001 multcap
 #' @importFrom nnet multinom
 #' @importFrom stats predict
+#' @importFrom zCompositions  cmultRepl
 
 
 rowlogratios <- function(data, col, group, binary=TRUE){
   #data = data.frame(data)
-  data = coda4microbiome::impute_zeros(data)
   matlrAUC = matrix(0, nrow=1, ncol=ncol(data))
   if(binary){
     for (j in 1:ncol(data)) {

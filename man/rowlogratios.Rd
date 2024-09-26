@@ -23,7 +23,9 @@ parallel logarithmic ratios
 }
 \examples{
 data(HIV)
-AUC <- rowlogratios(x_HIV, 2, y_HIV)
+x_HIVImp = zCompositions::cmultRepl(x_HIV, method="GBM",
+output="p-counts",suppress.print=TRUE,z.warning=0.99)
+AUC <- rowlogratios(x_HIVImp, 2, y_HIV)
 AUC[1:10]
 
 }

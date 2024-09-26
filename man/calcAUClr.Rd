@@ -23,6 +23,8 @@ parallel AUC for data
 }
 \examples{
 data(HIV)
-AUC <- calcAUClr(x_HIV, y_HIV, cores=2)
+x_HIVImp = zCompositions::cmultRepl(x_HIV, method="GBM",
+output="p-counts",suppress.print=TRUE,z.warning=0.99)
+AUC <- calcAUClr(x_HIVImp, y_HIV, cores=2)
 AUC[1:10,1:10]
 }

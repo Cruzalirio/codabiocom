@@ -16,7 +16,6 @@ Imports:
     doParallel,
     foreach,
     parallel,
-    coda4microbiome,
     pROC,
     zCompositions,
     nnet,
