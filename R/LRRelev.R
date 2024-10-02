@@ -58,6 +58,7 @@ LRRelev <- function (data, sample, group, taxa, otus, binary=TRUE,  threshold=2,
                                      suppress.print=TRUE,z.warning=0.99)
   res <- codabiocom::calcAUClr(data1ZI,group, cores)
   res[lower.tri(res) ] <- t(res)[lower.tri(res) ]
+  diag(res) <- 0
   o <- order(colSums(abs(res)), decreasing = TRUE)
   M <- res[o, o]
   maxrow <- ncol(M)
@@ -72,7 +73,7 @@ LRRelev <- function (data, sample, group, taxa, otus, binary=TRUE,  threshold=2,
                   `association log-ratio with y` = M)
   assoc <- rep(0,ncol(data1ZI))
   for (m in 1:ncol(data1ZI)){
-    assoc[m] <- sum(LRS$`association log-ratio with y`[1:m,1:m])/m^2
+    assoc[m] <- sum(LRS$`association log-ratio with y`[1:m,1:m])/(m^2-m)
   }
   maxim <- which.max(assoc)
   LRImp <- sort(as.numeric(LRS$`order of importance`[1:maxim]))
