@@ -15,6 +15,7 @@
 #' @return \code{Misery} a list of OTUS with counts less than the threshold
 #' @return \code{uniqueOTUS} a list of OTUS with counts only in one sample
 #' @return \code{AUCs} The matrix of AUCs by OTUS
+#' @return \code{OTUSRelev} The list of relevant otus
 #' @examples
 #' data(HIV)
 #' output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
@@ -76,13 +77,14 @@ LRRelev <- function (data, sample, group, taxa, otus, binary=TRUE,  threshold=2,
     assoc[m] <- sum(LRS$`association log-ratio with y`[1:m,1:m])/(m^2-m)
   }
   maxim <- which.max(assoc)
-  LRImp <- sort(as.numeric(LRS$`order of importance`[1:maxim]))
-  data1Imp <- data1ZI[,LRImp]
-  return(list(dataImp = data1Imp,
+  #LRImp <- sort(as.numeric(LRS$`order of importance`[1:maxim]))
+  #data1Imp <- data1ZI[,LRImp]
+  return(list(dataImp = data1ZI,
               OTUS = data.frame(otus=otus[LRS$`order of importance`],
                                 assoc = assoc),
               Misery =otus[Misery], uniqueOTUS = otus1[uniqueOTUS],
-              AUCs = res))
+              AUCs = res,
+              OTUSRelev = otus[LRS$`order of importance`[1:maxim]]))
 }
 
 

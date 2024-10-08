@@ -42,6 +42,8 @@ LRRelev(
 \code{uniqueOTUS} a list of OTUS with counts only in one sample
 
 \code{AUCs} The matrix of AUCs by OTUS
+
+\code{OTUSRelev} The list of relevant otus
 }
 \description{
 parallel logarithmic ratios
