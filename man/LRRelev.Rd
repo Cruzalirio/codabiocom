@@ -4,16 +4,7 @@
 \alias{LRRelev}
 \title{LRRelev}
 \usage{
-LRRelev(
-  data,
-  sample,
-  group,
-  taxa,
-  otus,
-  binary = TRUE,
-  threshold = 2,
-  cores = NULL
-)
+LRRelev(data, sample, group, taxa, otus, threshold = 2, cores = NULL, X = NULL)
 }
 \arguments{
 \item{data}{data with counts with OTUs in the columns and samples in rows}
@@ -26,11 +17,11 @@ LRRelev(
 
 \item{otus}{a vector with the name of each OTUS}
 
-\item{binary}{\code{logical} TRUE if group are binary, FALSE if group are multinomial}
-
 \item{threshold}{minimum count for the OTU entered for comparison}
 
 \item{cores}{a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used}
+
+\item{X}{a \eqn{n\times p} matrix of p covariates observed in each sample}
 }
 \value{
 \code{data1Imp} data with imputed zeros
@@ -50,8 +41,9 @@ parallel logarithmic ratios
 }
 \examples{
 data(HIV)
+Xnp <- model.matrix(y_HIV~MSM_HIV)
 output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
- taxa = colnames(x_HIV),otus = colnames(x_HIV),binary=TRUE , cores=2)
+ taxa = colnames(x_HIV),otus = colnames(x_HIV), cores=2, X=Xnp)
 
 
 }

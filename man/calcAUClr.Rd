@@ -4,7 +4,7 @@
 \alias{calcAUClr}
 \title{calcAUClr}
 \usage{
-calcAUClr(data, group, cores = NULL, binary = TRUE)
+calcAUClr(data, group, cores = NULL, X = NULL)
 }
 \arguments{
 \item{data}{abundance matrix or data frame (rows are samples, columns are variables (taxa))}
@@ -13,7 +13,7 @@ calcAUClr(data, group, cores = NULL, binary = TRUE)
 
 \item{cores}{a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used}
 
-\item{binary}{\code{logical} TRUE if group are binary, FALSE if group are multinomial}
+\item{X}{a \eqn{n\times p} matrix of p covariates observed in each sample}
 }
 \value{
 \code{res} the upper triangular of AUC between OTUS
@@ -25,6 +25,7 @@ parallel AUC for data
 data(HIV)
 x_HIVImp = zCompositions::cmultRepl(x_HIV, method="GBM",
 output="p-counts",suppress.print=TRUE,z.warning=0.99)
-AUC <- calcAUClr(x_HIVImp, y_HIV, cores=2)
+Xnp <- model.matrix(y_HIV~MSM_HIV)
+AUC <- calcAUClr(data = x_HIVImp, group = y_HIV, cores=2, X=Xnp)
 AUC[1:10,1:10]
 }

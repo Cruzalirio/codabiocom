@@ -7,8 +7,8 @@
 #' @param taxa a vector with the taxon classification of each OTU
 #' @param otus a vector with the name of each OTUS
 #' @param sample name of each sample
-#' @param binary \code{logical} TRUE if group are binary, FALSE if group are multinomial
 #' @param threshold minimum count for the OTU entered for comparison
+#' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
 #' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
 #' @return \code{data1Imp} data with imputed zeros
 #' @return \code{OTUS} a dataframe with otus and their association index Cesc calculate
@@ -18,8 +18,9 @@
 #' @return \code{OTUSRelev} The list of relevant otus
 #' @examples
 #' data(HIV)
+#' Xnp <- model.matrix(y_HIV~MSM_HIV)
 #' output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
-#'  taxa = colnames(x_HIV),otus = colnames(x_HIV),binary=TRUE , cores=2)
+#'  taxa = colnames(x_HIV),otus = colnames(x_HIV), cores=2, X=Xnp)
 #'
 #'
 #' @export
@@ -28,7 +29,7 @@
 
 
 
-LRRelev <- function (data, sample, group, taxa, otus, binary=TRUE,  threshold=2, cores=NULL){
+LRRelev <- function (data, sample, group, taxa, otus, threshold=2, cores=NULL, X=NULL){
   #data = data.frame(data)
   # Delete OTUS with total count less of umbral
   Misery <- as.vector(which(colSums(data)<=threshold))
@@ -57,7 +58,7 @@ LRRelev <- function (data, sample, group, taxa, otus, binary=TRUE,  threshold=2,
   }
   data1ZI = zCompositions::cmultRepl(data2, method="GBM",output="p-counts",
                                      suppress.print=TRUE,z.warning=0.99)
-  res <- codabiocom::calcAUClr(data1ZI,group, cores)
+  res <- codabiocom::calcAUClr(data1ZI,group, cores, X)
   res[lower.tri(res) ] <- t(res)[lower.tri(res) ]
   diag(res) <- 0
   o <- order(colSums(abs(res)), decreasing = TRUE)

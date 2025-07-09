@@ -6,13 +6,14 @@
 #' @param group a vector with the sample groups
 #' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
 #' @return \code{res} the upper triangular of AUC between OTUS
-#' @param binary \code{logical} TRUE if group are binary, FALSE if group are multinomial
+#' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
 #'
 #' @examples
 #' data(HIV)
 #' x_HIVImp = zCompositions::cmultRepl(x_HIV, method="GBM",
 #' output="p-counts",suppress.print=TRUE,z.warning=0.99)
-#' AUC <- calcAUClr(x_HIVImp, y_HIV, cores=2)
+#' Xnp <- model.matrix(y_HIV~MSM_HIV)
+#' AUC <- calcAUClr(data = x_HIVImp, group = y_HIV, cores=2, X=Xnp)
 #' AUC[1:10,1:10]
 #' @export
 #' @importFrom parallel makeCluster detectCores stopCluster
@@ -22,7 +23,7 @@
 
 
 
-calcAUClr <- function(data, group, cores=NULL, binary=TRUE){
+calcAUClr <- function(data, group, cores=NULL, X =NULL){
   # cores <- parallel::makeCluster(parallel::detectCores()-1, type='PSOCK') # grabs max available
   if(is.null(cores)){
     cores <- parallel::detectCores()-1
@@ -38,7 +39,7 @@ calcAUClr <- function(data, group, cores=NULL, binary=TRUE){
                  .inorder = FALSE,
                  .packages = c('doParallel', "pROC"),
                   .export = c("rowlogratios", "LRRelev")) %dopar% {
-                   codabiocom::rowlogratios(data, i, group)
+                   codabiocom::rowlogratios(data, i, group, X)
                  }
 
   parallel::stopCluster(cl)

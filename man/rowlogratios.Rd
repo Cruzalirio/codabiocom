@@ -4,7 +4,7 @@
 \alias{rowlogratios}
 \title{rowlogratios}
 \usage{
-rowlogratios(data, col, group, binary = TRUE)
+rowlogratios(data, col, group, X = NULL)
 }
 \arguments{
 \item{data}{data with counts with OTUs in the columns and samples in rows}
@@ -13,7 +13,7 @@ rowlogratios(data, col, group, binary = TRUE)
 
 \item{group}{a vector with the sample groups}
 
-\item{binary}{\code{logical} TRUE if group are binary, FALSE if group are multinomial}
+\item{X}{a \eqn{n\times p} matrix of p covariates observed in each sample}
 }
 \value{
 \code{matlrAUC} A vector of size \eqn{1\times n} with the OTU's attainments in the given column
@@ -23,9 +23,10 @@ parallel logarithmic ratios
 }
 \examples{
 data(HIV)
-x_HIVImp = zCompositions::cmultRepl(x_HIV, method="GBM",
+x_HIVImp <- zCompositions::cmultRepl(x_HIV, method="GBM",
 output="p-counts",suppress.print=TRUE,z.warning=0.99)
-AUC <- rowlogratios(x_HIVImp, 2, y_HIV)
+Xnp <- model.matrix(y_HIV~MSM_HIV)
+AUC <- rowlogratios(data= x_HIVImp, col= 2, group=y_HIV, X =Xnp)
 AUC[1:10]
 
 }

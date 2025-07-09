@@ -1,7 +1,7 @@
 Package: codabiocom
 Type: Package
 Title: Calculate the associations proposed by the CodaBiocom group and explore the relevant OTUS in abundance studies
-Version: 0.2.0
+Version: 0.3.0
 Author: Nelson Alirio Cruz Gutierrez <nelson-alirio@uib.es>
 Maintainer: Nelson Alirio Cruz Gutierrez <nelson-alirio@uib.es>
 Description: More about what it does (maybe more than one line)
