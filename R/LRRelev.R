@@ -60,9 +60,12 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2, cores=NULL, X
                                      suppress.print=TRUE,z.warning=0.99)
   res <- codabiocom::calcAUClr(data1ZI,group, cores, X)
   res[lower.tri(res) ] <- t(res)[lower.tri(res) ]
+  colnames(res) <- names(data2)
+  rownames(res) <- names(data2)
   diag(res) <- 0
   o <- order(colSums(abs(res)), decreasing = TRUE)
   M <- res[o, o]
+  MTemp <- M
   maxrow <- ncol(M)
   colnames(M) <- o
   rownames(M) <- colnames(M)
@@ -84,7 +87,7 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2, cores=NULL, X
               OTUS = data.frame(otus=otus[LRS$`order of importance`],
                                 assoc = assoc),
               Misery =otus[Misery], uniqueOTUS = otus1[uniqueOTUS],
-              AUCs = M,
+              AUCs = MTemp,
               OTUSRelev = otus[LRS$`order of importance`[1:maxim]]))
 }
 
