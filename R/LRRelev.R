@@ -84,7 +84,7 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2, cores=NULL, X
               OTUS = data.frame(otus=otus[LRS$`order of importance`],
                                 assoc = assoc),
               Misery =otus[Misery], uniqueOTUS = otus1[uniqueOTUS],
-              AUCs = res,
+              AUCs = M,
               OTUSRelev = otus[LRS$`order of importance`[1:maxim]]))
 }
 
