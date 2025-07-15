@@ -11,9 +11,9 @@ combine_fun(...)
 which are matrices of the same number of columns.}
 }
 \value{
-A list with two elements:
-\item{AUC}{A matrix formed by row-binding the \code{AUC} matrices from the input lists.}
-\item{VAR}{A matrix formed by row-binding the \code{VAR} matrices from the input lists.}
+\code{AUC} A matrix formed by row-binding the \code{AUC} matrices from the input lists.
+
+\code{VAR} A matrix formed by row-binding the \code{VAR} matrices from the input lists.
 }
 \description{
 This function combines multiple lists, each containing matrices named \code{AUC} and \code{VAR},

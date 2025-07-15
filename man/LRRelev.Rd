@@ -36,13 +36,13 @@ LRRelev(
 
 \item{X}{a \eqn{n\times p} matrix of p covariates observed in each sample}
 
-\item{conf.level}{the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI.}
+\item{conf.level}{the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI}
 
-\item{method}{the method to use: \code{hanley} , \code{delong} or \code{bootstrap}.}
+\item{method}{the method to use: 'hanley', 'delong' or 'bootstrap'}
 
-\item{rho}{Mean of correlation between pairs of AUC.}
+\item{rho}{Mean of correlation between pairs of AUC}
 
-\item{boot.n}{the number of bootstrap replicates. Default: 500.}
+\item{boot.n}{the number of bootstrap replicates. Default: 500}
 }
 \value{
 \code{data1Imp} data with imputed zeros

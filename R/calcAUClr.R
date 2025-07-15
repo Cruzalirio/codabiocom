@@ -5,12 +5,12 @@
 #' @param data abundance matrix or data frame (rows are samples, columns are variables (taxa))
 #' @param group a vector with the sample groups
 #' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
+#' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
+#' @param conf.level the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI
+#' @param method 	the method to use: 'hanley', 'delong' or 'bootstrap'
+#' @param rho Mean of correlation between pairs of AUC
 #' @return \code{AUC} the upper triangular of AUC between OTUS
 #' @return \code{VAR} the upper triangular of the variance of each AUC between OTUS
-#' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
-#' @param conf.level the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI.
-#' @param method 	the method to use: \code{hanley} , \code{delong} or \code{bootstrap}.
-#' @param rho Mean of correlation between pairs of AUC.
 #'
 #' @examples
 #' data(HIV)

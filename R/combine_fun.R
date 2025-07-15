@@ -7,9 +7,8 @@ utils::globalVariables(c("i"))
 #' @param ... Two or more list objects to combine. Each list must contain elements named \code{AUC} and \code{VAR},
 #'   which are matrices of the same number of columns.
 #'
-#' @return A list with two elements:
-#' \item{AUC}{A matrix formed by row-binding the \code{AUC} matrices from the input lists.}
-#' \item{VAR}{A matrix formed by row-binding the \code{VAR} matrices from the input lists.}
+#' @return \code{AUC} A matrix formed by row-binding the \code{AUC} matrices from the input lists.
+#' @return \code{VAR} A matrix formed by row-binding the \code{VAR} matrices from the input lists.
 #' @keywords internal
 
 combine_fun <- function(...) {

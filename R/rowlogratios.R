@@ -6,9 +6,9 @@
 #' @param group a vector with the sample groups
 #' @param col the number of column for calculate the logratios
 #' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
-#' @param conf.level the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI.
-#' @param method 	the method to use: \code{hanley} , \code{delong} or \code{bootstrap}.
-#' @param rho Mean of correlation between pairs of AUC.
+#' @param conf.level the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI
+#' @param method 	the method to use: 'hanley', 'delong' or 'bootstrap'
+#' @param rho Mean of correlation between pairs of AUC
 #'
 #'@return \code{AUC} A vector of size \eqn{1\times m} with the AUC between the OTU's attainments in the given column
 #'@return \code{VAR} A vector of size \eqn{1\times m} with the variances of AUC between the OTU's attainments in the given column
