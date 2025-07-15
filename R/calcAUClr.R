@@ -5,8 +5,12 @@
 #' @param data abundance matrix or data frame (rows are samples, columns are variables (taxa))
 #' @param group a vector with the sample groups
 #' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
-#' @return \code{res} the upper triangular of AUC between OTUS
+#' @return \code{AUC} the upper triangular of AUC between OTUS
+#' @return \code{VAR} the upper triangular of the variance of each AUC between OTUS
 #' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
+#' @param conf.level the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI.
+#' @param method 	the method to use: \code{hanley} , \code{delong} or \code{bootstrap}.
+#' @param rho Mean of correlation between pairs of AUC.
 #'
 #' @examples
 #' data(HIV)
@@ -23,27 +27,48 @@
 
 
 
-calcAUClr <- function(data, group, cores=NULL, X =NULL){
-  # cores <- parallel::makeCluster(parallel::detectCores()-1, type='PSOCK') # grabs max available
-  if(is.null(cores)){
-    cores <- parallel::detectCores()-1
+calcAUClr <- function(data, group, cores = NULL, X = NULL,  conf.level = 0.95,
+                      method = c("hanley", "delong", "bootstrap"),
+                      rho = 0.1) {
+  if (is.null(cores)) {
+    cores <- parallel::detectCores() - 1
   }
-  #cl <- parallel::makeCluster(getOption('cl.cores', cores))
   cl <- parallel::makePSOCKcluster(cores)
   doParallel::registerDoParallel(cl)
 
-  #foreach::registerDoSEQ()
-  res <- foreach::foreach(i = seq_len(ncol(data)),
-                 .combine = rbind,
-                 .multicombine = TRUE,
-                 .inorder = FALSE,
-                 .packages = c('doParallel', "pROC"),
-                  .export = c("rowlogratios", "LRRelev")) %dopar% {
-                   codabiocom::rowlogratios(data, i, group, X)
-                 }
+  res <- foreach::foreach(
+    i = seq_len(ncol(data)),
+    .combine = combine_fun,
+    .init = list(
+      AUC = matrix(nrow = 0, ncol = ncol(data)),
+      VAR = matrix(nrow = 0, ncol = ncol(data))
+    ),
+    .multicombine = TRUE,
+    .inorder = FALSE,
+    .packages = c('doParallel', 'pROC', 'HandTill2001', 'nnet'),
+    .export = c("rowlogratios")
+  ) %dopar% {
+    codabiocom::rowlogratios(data = data, group= group, col = i,
+                             X = X, conf.level = conf.level,
+                             method = method ,
+                             rho = rho)
+  }
 
   parallel::stopCluster(cl)
-  i <- NULL
-  rm(i)
+
+  # Asegura que nombres de filas y columnas coincidan
+  colnames(res$AUC) <- colnames(data)
+  rownames(res$AUC) <- colnames(data)
+  colnames(res$VAR) <- colnames(data)
+  rownames(res$VAR) <- colnames(data)
+
+  # Completar triangulo inferior (matrices simétricas)
+  res$AUC[lower.tri(res$AUC)] <- t(res$AUC)[lower.tri(res$AUC)]
+  res$VAR[lower.tri(res$VAR)] <- t(res$VAR)[lower.tri(res$VAR)]
+
+  diag(res$AUC) <- 0
+  diag(res$VAR) <- 0
+
   return(res)
 }
+

@@ -4,19 +4,35 @@
 \alias{rowlogratios}
 \title{rowlogratios}
 \usage{
-rowlogratios(data, col, group, X = NULL)
+rowlogratios(
+  data,
+  group,
+  col,
+  X = NULL,
+  conf.level = 0.95,
+  method = c("hanley", "delong", "bootstrap"),
+  rho = 0.1
+)
 }
 \arguments{
 \item{data}{data with counts with OTUs in the columns and samples in rows}
 
-\item{col}{the number of column for calculate the logratios}
-
 \item{group}{a vector with the sample groups}
 
+\item{col}{the number of column for calculate the logratios}
+
 \item{X}{a \eqn{n\times p} matrix of p covariates observed in each sample}
+
+\item{conf.level}{the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI.}
+
+\item{method}{the method to use: \code{hanley} , \code{delong} or \code{bootstrap}.}
+
+\item{rho}{Mean of correlation between pairs of AUC.}
 }
 \value{
-\code{matlrAUC} A vector of size \eqn{1\times n} with the OTU's attainments in the given column
+\code{AUC} A vector of size \eqn{1\times m} with the AUC between the OTU's attainments in the given column
+
+\code{VAR} A vector of size \eqn{1\times m} with the variances of AUC between the OTU's attainments in the given column
 }
 \description{
 parallel logarithmic ratios
