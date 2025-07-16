@@ -115,7 +115,7 @@ rowlogratios <- function(data, group, col, X = NULL, conf.level = 0.95,
 
         # Combine: mean AUC and variance with cov approx
         C <- n_classes
-        auc_val <- 2/(C*(C-1)) * sum(auc_pairs)
+        #auc_val <- 2/(C*(C-1)) * sum(auc_pairs)
         cov_sum <- 0
         for (p in 1:(length(var_pairs)-1)) {
           for (q in (p+1):length(var_pairs)) {

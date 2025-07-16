@@ -195,8 +195,9 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
     OTUS = data.frame(
       otus = otus[LRS$order_importance],
       assoc = assoc,
-      assoc_var = var_assoc
-    ),
+      assoc_var = var_assoc,
+      ciLower = CIInf,
+      ciUpper = CISup),
     Misery = otus[Misery],
     uniqueOTUS = otus1[uniqueOTUs],
     AUCs = MTemp,
