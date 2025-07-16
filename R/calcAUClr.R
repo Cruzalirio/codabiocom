@@ -1,30 +1,34 @@
 #' @title calcAUClr
 #' @description
-#' parallel AUC for data
+#' Compute pairwise AUCs for all OTUs in compositional microbiome data.
 #'
-#' @param data abundance matrix or data frame (rows are samples, columns are variables (taxa))
-#' @param group a vector with the sample groups
-#' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
-#' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
-#' @param conf.level the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI
-#' @param method 	the method to use: 'hanley', 'delong' or 'bootstrap'
-#' @param rho Mean of correlation between pairs of AUC
-#' @return \code{AUC} the upper triangular of AUC between OTUS
-#' @return \code{VAR} the upper triangular of the variance of each AUC between OTUS
+#' @param data Abundance matrix or data frame (rows are samples, columns are taxa/variables).
+#' @param group A vector indicating the group of each sample.
+#' @param cores Number of cores for parallelization. If \code{NULL}, uses \code{parallel::detectCores()-1}.
+#' @param X An optional \eqn{n \times p} matrix of covariates for each sample.
+#' @param conf.level The confidence level for intervals, not in percent (e.g., 0.95 for 95\% CI).
+#' @param method The method to use: \code{"hanley"}, \code{"delong"}, or \code{"bootstrap"}.
+#' @param rho Mean correlation assumed between pairs of AUCs.
+#'
+#' @return A list with:
+#' \describe{
+#'   \item{\code{AUC}}{The upper triangular matrix of pairwise AUCs between OTUs.}
+#'   \item{\code{VAR}}{The upper triangular matrix of the variances of each AUC.}
+#' }
 #'
 #' @examples
 #' data(HIV)
-#' x_HIVImp = zCompositions::cmultRepl(x_HIV, method="GBM",
-#' output="p-counts",suppress.print=TRUE,z.warning=0.99)
-#' Xnp <- model.matrix(y_HIV~MSM_HIV)
-#' AUC <- calcAUClr(data = x_HIVImp, group = y_HIV, cores=2, X=Xnp)
-#' AUC[1:10,1:10]
+#' x_HIVImp <- zCompositions::cmultRepl(x_HIV, method = "GBM",
+#'   output = "p-counts", suppress.print = TRUE, z.warning = 0.99)
+#' Xnp <- model.matrix(y_HIV ~ MSM_HIV)
+#' AUC <- calcAUClr(data = x_HIVImp, group = y_HIV, cores = 2, X = Xnp,
+#' method = "hanley")
+#' AUC$AUC[1:10, 1:10]
+#'
 #' @export
 #' @importFrom parallel makeCluster detectCores stopCluster
 #' @importFrom doParallel registerDoParallel
-#' @importFrom foreach registerDoSEQ foreach
-#' @importFrom foreach %dopar%
-
+#' @importFrom foreach registerDoSEQ foreach %dopar%
 
 
 calcAUClr <- function(data, group, cores = NULL, X = NULL,  conf.level = 0.95,
@@ -69,6 +73,6 @@ calcAUClr <- function(data, group, cores = NULL, X = NULL,  conf.level = 0.95,
   diag(res$AUC) <- 0
   diag(res$VAR) <- 0
 
-  return(res)
+  return(list=c(AUC=res$AUC, VAR=res$VAR))
 }
 

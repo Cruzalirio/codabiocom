@@ -15,34 +15,37 @@ rowlogratios(
 )
 }
 \arguments{
-\item{data}{data with counts with OTUs in the columns and samples in rows}
+\item{data}{A data frame or matrix with counts; OTUs in columns and samples in rows.}
 
-\item{group}{a vector with the sample groups}
+\item{group}{A vector with the sample groups.}
 
-\item{col}{the number of column for calculate the logratios}
+\item{col}{The index (integer) of the column for which the logratios are computed.}
 
-\item{X}{a \eqn{n\times p} matrix of p covariates observed in each sample}
+\item{X}{An optional \eqn{n \times p} matrix of covariates for each sample.}
 
-\item{conf.level}{the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI}
+\item{conf.level}{The confidence level for intervals, not in percent (e.g., 0.95 for 95\% CI).}
 
-\item{method}{the method to use: 'hanley', 'delong' or 'bootstrap'}
+\item{method}{The method to use: \code{"hanley"}, \code{"delong"} or \code{"bootstrap"}.}
 
-\item{rho}{Mean of correlation between pairs of AUC}
+\item{rho}{Mean correlation assumed between pairs of AUCs.}
 }
 \value{
-\code{AUC} A vector of size \eqn{1\times m} with the AUC between the OTU's attainments in the given column
-
-\code{VAR} A vector of size \eqn{1\times m} with the variances of AUC between the OTU's attainments in the given column
+A list with:
+\describe{
+  \item{\code{AUC}}{A vector of size \eqn{1 \times m} with the AUCs comparing the selected OTU to all others.}
+  \item{\code{VAR}}{A vector of size \eqn{1 \times m} with the variances of those AUCs.}
+}
 }
 \description{
-parallel logarithmic ratios
+Compute pairwise logarithmic ratios for a selected OTU (column) in parallel.
 }
 \examples{
 data(HIV)
-x_HIVImp <- zCompositions::cmultRepl(x_HIV, method="GBM",
-output="p-counts",suppress.print=TRUE,z.warning=0.99)
-Xnp <- model.matrix(y_HIV~MSM_HIV)
-AUC <- rowlogratios(data= x_HIVImp, col= 2, group=y_HIV, X =Xnp)
-AUC[1:10]
+x_HIVImp <- zCompositions::cmultRepl(x_HIV, method = "GBM",
+  output = "p-counts", suppress.print = TRUE, z.warning = 0.99)
+Xnp <- model.matrix(y_HIV ~ MSM_HIV)
+AUC <- rowlogratios(data = x_HIVImp, col = 2, group = y_HIV,
+ X = Xnp, method = "hanley")
+AUC$AUC[1:10]
 
 }

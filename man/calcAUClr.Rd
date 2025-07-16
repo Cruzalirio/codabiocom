@@ -15,33 +15,37 @@ calcAUClr(
 )
 }
 \arguments{
-\item{data}{abundance matrix or data frame (rows are samples, columns are variables (taxa))}
+\item{data}{Abundance matrix or data frame (rows are samples, columns are taxa/variables).}
 
-\item{group}{a vector with the sample groups}
+\item{group}{A vector indicating the group of each sample.}
 
-\item{cores}{a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used}
+\item{cores}{Number of cores for parallelization. If \code{NULL}, uses \code{parallel::detectCores()-1}.}
 
-\item{X}{a \eqn{n\times p} matrix of p covariates observed in each sample}
+\item{X}{An optional \eqn{n \times p} matrix of covariates for each sample.}
 
-\item{conf.level}{the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI}
+\item{conf.level}{The confidence level for intervals, not in percent (e.g., 0.95 for 95\% CI).}
 
-\item{method}{the method to use: 'hanley', 'delong' or 'bootstrap'}
+\item{method}{The method to use: \code{"hanley"}, \code{"delong"}, or \code{"bootstrap"}.}
 
-\item{rho}{Mean of correlation between pairs of AUC}
+\item{rho}{Mean correlation assumed between pairs of AUCs.}
 }
 \value{
-\code{AUC} the upper triangular of AUC between OTUS
-
-\code{VAR} the upper triangular of the variance of each AUC between OTUS
+A list with:
+\describe{
+  \item{\code{AUC}}{The upper triangular matrix of pairwise AUCs between OTUs.}
+  \item{\code{VAR}}{The upper triangular matrix of the variances of each AUC.}
+}
 }
 \description{
-parallel AUC for data
+Compute pairwise AUCs for all OTUs in compositional microbiome data.
 }
 \examples{
 data(HIV)
-x_HIVImp = zCompositions::cmultRepl(x_HIV, method="GBM",
-output="p-counts",suppress.print=TRUE,z.warning=0.99)
-Xnp <- model.matrix(y_HIV~MSM_HIV)
-AUC <- calcAUClr(data = x_HIVImp, group = y_HIV, cores=2, X=Xnp)
-AUC[1:10,1:10]
+x_HIVImp <- zCompositions::cmultRepl(x_HIV, method = "GBM",
+  output = "p-counts", suppress.print = TRUE, z.warning = 0.99)
+Xnp <- model.matrix(y_HIV ~ MSM_HIV)
+AUC <- calcAUClr(data = x_HIVImp, group = y_HIV, cores = 2, X = Xnp,
+method = "hanley")
+AUC$AUC[1:10, 1:10]
+
 }

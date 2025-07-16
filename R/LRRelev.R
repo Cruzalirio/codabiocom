@@ -1,35 +1,41 @@
 #' @title LRRelev
 #' @description
-#' parallel logarithmic ratios
+#' Compute parallel log-ratio separability indices for microbiome data.
 #'
-#' @param data data with counts with OTUs in the columns and samples in rows
-#' @param group a vector with the sample groups
-#' @param taxa a vector with the taxon classification of each OTU
-#' @param otus a vector with the name of each OTUS
-#' @param sample name of each sample
-#' @param threshold minimum count for the OTU entered for comparison
-#' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
-#' @param conf.level the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI
-#' @param method 	the method to use: 'hanley', 'delong' or 'bootstrap'
-#' @param rho Mean of correlation between pairs of AUC
-#' @param boot.n the number of bootstrap replicates. Default: 500
-#' @param cores a number of cores fo paralelization, if \code{cores=NULL}, \code{parallel::detectCores()-1} will be used
-#' @return \code{data1Imp} data with imputed zeros
-#' @return \code{OTUS} a dataframe with otus and their association index Cesc calculate
-#' @return \code{Misery} a list of OTUS with counts less than the threshold
-#' @return \code{uniqueOTUS} a list of OTUS with counts only in one sample
-#' @return \code{AUCs} The matrix of AUCs by OTUS
-#' @return \code{OTUSRelev} The list of relevant otus
+#' @param data A data frame or matrix with counts: OTUs in columns, samples in rows.
+#' @param group A vector indicating the group of each sample.
+#' @param taxa A vector with the taxonomic classification for each OTU.
+#' @param otus A vector with the name of each OTU.
+#' @param sample A vector with the name or ID of each sample.
+#' @param threshold Minimum total count for an OTU to be included. OTUs below this are excluded.
+#' @param X An optional \eqn{n \times p} matrix of covariates observed in each sample.
+#' @param conf.level The confidence level for intervals, not in percent (e.g., 0.95 for 95\% CI).
+#' @param method The method to use: \code{"hanley"}, \code{"delong"}, or \code{"bootstrap"}.
+#' @param rho Mean correlation assumed between pairs of AUCs.
+#' @param boot.n The number of bootstrap replicates. Default is 500.
+#' @param cores Number of cores for parallelization. If \code{NULL}, uses \code{parallel::detectCores()-1}.
+#'
+#' @return A list with:
+#' \describe{
+#'   \item{\code{data1Imp}}{Data with zeros imputed using GBM replacement.}
+#'   \item{\code{OTUS}}{A data frame with OTUs and their association index.}
+#'   \item{\code{Misery}}{A vector of OTUs with total counts less than the threshold.}
+#'   \item{\code{uniqueOTUS}}{A vector of OTUs present in only one sample.}
+#'   \item{\code{AUCs}}{The matrix of pairwise AUCs for OTUs.}
+#'   \item{\code{OTUSRelev}}{A vector with the most relevant OTUs based on the index.}
+#' }
+#'
 #' @examples
+#' # Example with HIV dataset:
 #' data(HIV)
-#' Xnp <- model.matrix(y_HIV~MSM_HIV)
-#' output1 <- LRRelev(data=x_HIV, sample = rownames(x_HIV), group = y_HIV,
-#'  taxa = colnames(x_HIV),otus = colnames(x_HIV), cores=2, X=Xnp)
-#'
+#' Xnp <- model.matrix(y_HIV ~ MSM_HIV)
+#' output1 <- LRRelev(data = x_HIV, sample = rownames(x_HIV), group = y_HIV,
+#'   taxa = colnames(x_HIV), otus = colnames(x_HIV), cores = 2,
+#'    X = Xnp, method = "hanley")
 #'
 #' @export
 #'
-#' @importFrom zCompositions  cmultRepl
+#' @importFrom zCompositions cmultRepl
 #' @importFrom stats qnorm quantile var
 #' @importFrom utils combn
 
@@ -76,7 +82,7 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
     res <- codabiocom::calcAUClr(data= data1ZI, group = group, cores = cores,
                                  X=X,conf.level = conf.level,
                                  method = method ,
-                                 rho = rho, boot.n = boot.n)
+                                 rho = rho)
 
     # Order OTUs by AUC importance
     o <- order(colSums(abs(res$AUC)), decreasing = TRUE)
@@ -112,8 +118,9 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
     CIInf <- assoc - qnorm((1+conf.level)/2) * sqrt(var_assoc)
     maxim <- which.max(assoc)
   }else{
-    res_init <- codabiocom::calcAUClr(data = data1ZI, group = group, cores = cores,
-                                      X = X, conf.level = conf.level,
+    res_init <- codabiocom::calcAUClr(data = data1ZI, group = group,
+                                      cores = cores, X = X,
+                                      conf.level = conf.level,
                                       method = method, rho = rho)
 
     o <- order(colSums(abs(res_init$AUC)), decreasing = TRUE)
@@ -134,7 +141,8 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
 
       for (class in unique(group)) {
         idx_class <- which(group == class)
-        idx_boot_class <- sample(idx_class, size = length(idx_class), replace = TRUE)
+        idx_boot_class <- sample(idx_class, size = length(idx_class),
+                                 replace = TRUE)
         idx_boot <- c(idx_boot, idx_boot_class)
       }
 

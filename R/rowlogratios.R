@@ -1,31 +1,37 @@
 #' @title rowlogratios
+#'
 #' @description
-#' parallel logarithmic ratios
+#' Compute pairwise logarithmic ratios for a selected OTU (column) in parallel.
 #'
-#' @param data data with counts with OTUs in the columns and samples in rows
-#' @param group a vector with the sample groups
-#' @param col the number of column for calculate the logratios
-#' @param X a \eqn{n\times p} matrix of p covariates observed in each sample
-#' @param conf.level the width of the confidence interval as [0,1], never in percent. Default: 0.95, resulting in a 95% CI
-#' @param method 	the method to use: 'hanley', 'delong' or 'bootstrap'
-#' @param rho Mean of correlation between pairs of AUC
+#' @param data A data frame or matrix with counts; OTUs in columns and samples in rows.
+#' @param group A vector with the sample groups.
+#' @param col The index (integer) of the column for which the logratios are computed.
+#' @param X An optional \eqn{n \times p} matrix of covariates for each sample.
+#' @param conf.level The confidence level for intervals, not in percent (e.g., 0.95 for 95\% CI).
+#' @param method The method to use: \code{"hanley"}, \code{"delong"} or \code{"bootstrap"}.
+#' @param rho Mean correlation assumed between pairs of AUCs.
 #'
-#'@return \code{AUC} A vector of size \eqn{1\times m} with the AUC between the OTU's attainments in the given column
-#'@return \code{VAR} A vector of size \eqn{1\times m} with the variances of AUC between the OTU's attainments in the given column
+#' @return A list with:
+#' \describe{
+#'   \item{\code{AUC}}{A vector of size \eqn{1 \times m} with the AUCs comparing the selected OTU to all others.}
+#'   \item{\code{VAR}}{A vector of size \eqn{1 \times m} with the variances of those AUCs.}
+#' }
+#'
 #' @examples
 #' data(HIV)
-#' x_HIVImp <- zCompositions::cmultRepl(x_HIV, method="GBM",
-#' output="p-counts",suppress.print=TRUE,z.warning=0.99)
-#' Xnp <- model.matrix(y_HIV~MSM_HIV)
-#' AUC <- rowlogratios(data= x_HIVImp, col= 2, group=y_HIV, X =Xnp)
-#' AUC[1:10]
+#' x_HIVImp <- zCompositions::cmultRepl(x_HIV, method = "GBM",
+#'   output = "p-counts", suppress.print = TRUE, z.warning = 0.99)
+#' Xnp <- model.matrix(y_HIV ~ MSM_HIV)
+#' AUC <- rowlogratios(data = x_HIVImp, col = 2, group = y_HIV,
+#'  X = Xnp, method = "hanley")
+#' AUC$AUC[1:10]
 #'
 #' @export
 #' @importFrom pROC auc roc
 #' @importFrom HandTill2001 multcap
 #' @importFrom nnet multinom
 #' @importFrom stats predict
-#' @importFrom zCompositions  cmultRepl
+#' @importFrom zCompositions cmultRepl
 
 
 rowlogratios <- function(data, group, col, X = NULL, conf.level = 0.95,
