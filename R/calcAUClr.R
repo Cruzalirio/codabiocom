@@ -73,6 +73,6 @@ calcAUClr <- function(data, group, cores = NULL, X = NULL,  conf.level = 0.95,
   diag(res$AUC) <- 0
   diag(res$VAR) <- 0
 
-  return(list=c(AUC=res$AUC, VAR=res$VAR))
+  return(list(AUC=res$AUC, VAR=res$VAR))
 }
 

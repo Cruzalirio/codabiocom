@@ -73,7 +73,7 @@ rowlogratios <- function(data, group, col, X = NULL, conf.level = 0.95,
         }else{
           # auc_temp <- pROC::ci.auc(roc_obj, method="bootstrap", conf.level=conf.level)
           # var_val <- (auc_temp[3]-auc_temp[1])/(2*qnorm((1+conf.level)/2))
-          var_val <- NA
+          var_val <- 1
         }
 
       } else {
@@ -100,7 +100,8 @@ rowlogratios <- function(data, group, col, X = NULL, conf.level = 0.95,
             n1 <- sum(binary == c2)
             Q1 <- auc_bin / (2 - auc_bin)
             Q2 <- 2 * auc_bin^2 / (1 + auc_bin)
-            var_bin <- (auc_bin * (1 - auc_bin) + (n1 - 1) * (Q1 - auc_bin^2) + (n0 - 1) * (Q2 - auc_bin^2)) / (n1 * n0)
+            var_bin <- (auc_bin * (1 - auc_bin) + (n1 - 1) * (Q1 - auc_bin^2) +
+                          (n0 - 1) * (Q2 - auc_bin^2)) / (n1 * n0)
             var_pairs[p] <- var_bin
           }else if(method=="delong"){
             auc_temp <- pROC::ci.auc(roc_bin, method="delong", conf.level=conf.level)
@@ -108,7 +109,7 @@ rowlogratios <- function(data, group, col, X = NULL, conf.level = 0.95,
           }else{
             #auc_temp <- pROC::ci.auc(roc_bin, method="bootstrap", conf.level=conf.level)
             #var_pairs[p] <- (auc_temp[3]-auc_temp[1])/(2*qnorm((1+conf.level)/2))
-            var_pairs[p] <- NA
+            var_pairs[p] <- 1
           }
         }
 
