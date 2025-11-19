@@ -193,7 +193,7 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
   return(list(
     dataImp = data1ZI,
     OTUS = data.frame(
-      otus = otus[LRS$order_importance],
+      otus = otus2[LRS$order_importance],
       assoc = assoc,
       assoc_var = var_assoc,
       ciLower = CIInf,
@@ -202,7 +202,7 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
     uniqueOTUS = otus1[uniqueOTUs],
     AUCs = MTemp,
     VARs = VTemp,
-    OTUSRelev = otus[LRS$order_importance[1:maxim]]
+    OTUSRelev = otus2[LRS$order_importance[1:maxim]]
   ))
 }
 
