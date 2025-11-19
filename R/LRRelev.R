@@ -186,7 +186,7 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
       names_max_log_ratio = colnames(data1ZI)[as.numeric(colnames(M_init)[which(M_init == max(abs(M_init)),
                                                                              arr.ind = TRUE)[(2:1)]])],
       order_importance = order_original,
-      name_most_import_variables = colnames(data)[order_original[1:maxrow]],
+      name_most_import_variables = colnames(data1ZI)[order_original[1:maxrow]],
       association_logratio_y = M_init
     )
   }
