@@ -100,10 +100,10 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
 
     LRS <- list(max_log_ratio = colnames(M)[which(M == max(abs(M)),
                                                   arr.ind = TRUE)[(2:1)]],
-                names_max_log_ratio = colnames(data)[as.numeric(colnames(M)[which(M == max(abs(M)),
+                names_max_log_ratio = colnames(data1ZI)[as.numeric(colnames(M)[which(M == max(abs(M)),
                                                                                   arr.ind = TRUE)[(2:1)]])],
                 order_importance = o,
-                name_most_import_variables = colnames(data)[o[1:maxrow]],
+                name_most_import_variables = colnames(data1ZI)[o[1:maxrow]],
                 association_logratio_y = M)
 
     assoc <- rep(0, ncol(data1ZI))
@@ -183,7 +183,7 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
     LRS <- list(
       max_log_ratio = colnames(M_init)[which(M_init == max(abs(M_init)),
                                              arr.ind = TRUE)[(2:1)]],
-      names_max_log_ratio = colnames(data)[as.numeric(colnames(M_init)[which(M_init == max(abs(M_init)),
+      names_max_log_ratio = colnames(data1ZI)[as.numeric(colnames(M_init)[which(M_init == max(abs(M_init)),
                                                                              arr.ind = TRUE)[(2:1)]])],
       order_importance = order_original,
       name_most_import_variables = colnames(data)[order_original[1:maxrow]],
