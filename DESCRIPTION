@@ -19,4 +19,9 @@ Imports:
     pROC,
     zCompositions,
     nnet,
-    HandTill2001
+    HandTill2001,
+    factoextra,
+    compositions,
+    tidyr,
+    dplyr,
+    ggplot2
