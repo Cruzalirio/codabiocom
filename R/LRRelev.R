@@ -72,10 +72,14 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
   }
 
   # Zero-imputation
+  if(sum(data2==0)>0){
   data1ZI <- zCompositions::cmultRepl(
     data2, method = "GBM", output = "p-counts",
     suppress.print = TRUE, z.warning = 0.99
-  )
+  )}
+  else{
+    data1ZI <- data2
+  }
 
   if(method %in% c("hanley", "delong")){
     # Calculate AUC and VAR matrices
