@@ -62,6 +62,7 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom compositions clr
 #' @importFrom factoextra fviz_pca_ind
+#' @import scales
 #' @importFrom stats prcomp dist hclust cutree kmeans
 #' @export
 generate_otu_plots <- function(output, group, plot_types = NULL, otus_order = NULL) {

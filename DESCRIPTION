@@ -24,4 +24,5 @@ Imports:
     compositions,
     tidyr,
     dplyr,
-    ggplot2
+    ggplot2,
+    scales
