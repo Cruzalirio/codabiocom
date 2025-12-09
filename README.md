@@ -52,9 +52,6 @@ Full documentation and function reference are available in the `./man/` director
 Contributions are welcome!  
 Please open an issue or submit a pull request with improvements.
 
-## 📜 License
-
-This package is released under the **MIT License**.
 
 ## 👨‍💻 Authors
 
