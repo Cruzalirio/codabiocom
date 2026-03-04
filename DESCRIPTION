@@ -1,7 +1,7 @@
 Package: codabiocom
 Type: Package
 Title: Calculate the associations proposed by the CodaBiocom group and explore the relevant OTUS in abundance studies
-Version: 0.3.0
+Version: 0.4.0
 Author: Nelson Alirio Cruz Gutierrez <nelson-alirio@uib.es>
 Maintainer: Nelson Alirio Cruz Gutierrez <nelson-alirio@uib.es>
 Description: More about what it does (maybe more than one line)
@@ -9,7 +9,7 @@ Description: More about what it does (maybe more than one line)
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 4.0.0)
 Imports:
@@ -18,11 +18,10 @@ Imports:
     parallel,
     pROC,
     zCompositions,
-    nnet,
-    HandTill2001,
     factoextra,
     compositions,
     tidyr,
+    glmnet,
     dplyr,
     ggplot2,
     scales

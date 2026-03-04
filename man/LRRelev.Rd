@@ -14,9 +14,8 @@ LRRelev(
   cores = NULL,
   X = NULL,
   conf.level = 0.95,
-  method = c("hanley", "delong", "bootstrap"),
-  rho = 0.1,
-  boot.n = 500
+  method = c("hanley", "delong"),
+  rho = 0.1
 )
 }
 \arguments{
@@ -41,8 +40,6 @@ LRRelev(
 \item{method}{The method to use: \code{"hanley"}, \code{"delong"}, or \code{"bootstrap"}.}
 
 \item{rho}{Mean correlation assumed between pairs of AUCs.}
-
-\item{boot.n}{The number of bootstrap replicates. Default is 500.}
 }
 \value{
 A list with:

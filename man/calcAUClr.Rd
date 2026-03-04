@@ -10,7 +10,7 @@ calcAUClr(
   cores = NULL,
   X = NULL,
   conf.level = 0.95,
-  method = c("hanley", "delong", "bootstrap"),
+  method = c("hanley", "delong"),
   rho = 0.1
 )
 }

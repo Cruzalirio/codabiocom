@@ -12,7 +12,6 @@
 #' @param conf.level The confidence level for intervals, not in percent (e.g., 0.95 for 95\% CI).
 #' @param method The method to use: \code{"hanley"}, \code{"delong"}, or \code{"bootstrap"}.
 #' @param rho Mean correlation assumed between pairs of AUCs.
-#' @param boot.n The number of bootstrap replicates. Default is 500.
 #' @param cores Number of cores for parallelization. If \code{NULL}, uses \code{parallel::detectCores()-1}.
 #'
 #' @return A list with:
@@ -43,8 +42,8 @@
 
 LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
                      cores=NULL, X=NULL, conf.level = 0.95,
-                     method = c("hanley", "delong", "bootstrap"),
-                     rho = 0.1, boot.n = 500){
+                     method = c("hanley", "delong"),
+                     rho = 0.1){
   Misery <- as.vector(which(colSums(data) <= threshold))
   if (length(Misery) > 0) {
     data1 <- data[, -Misery]
@@ -79,13 +78,10 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
   )}else{
     data1ZI <- data2
   }
-
-  if(method %in% c("hanley", "delong")){
     # Calculate AUC and VAR matrices
     res <- codabiocom::calcAUClr(data= data1ZI, group = group, cores = cores,
                                  X=X,conf.level = conf.level,
-                                 method = method ,
-                                 rho = rho)
+                                 method = method)
 
     # Order OTUs by AUC importance
     o <- order(colSums(abs(res$AUC)), decreasing = TRUE)
@@ -120,79 +116,6 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
     CISup <- assoc + qnorm((1+conf.level)/2) * sqrt(var_assoc)
     CIInf <- assoc - qnorm((1+conf.level)/2) * sqrt(var_assoc)
     maxim <- which.max(assoc)
-  }else{
-    res_init <- codabiocom::calcAUClr(data = data1ZI, group = group,
-                                      cores = cores, X = X,
-                                      conf.level = conf.level,
-                                      method = method, rho = rho)
-
-    o <- order(colSums(abs(res_init$AUC)), decreasing = TRUE)
-    M_init <- res_init$AUC[o, o]
-
-    maxrow <- ncol(M_init)
-    order_original <- o
-
-    # Prepara matriz para guardar los índices bootstrap
-    assoc_boot <- matrix(NA, nrow = boot.n, ncol = maxrow)
-
-    n <- nrow(data1ZI)
-
-    for (b in 1:boot.n) {
-      set.seed(123 + b)  # reproducible
-
-      idx_boot <- c()
-
-      for (class in unique(group)) {
-        idx_class <- which(group == class)
-        idx_boot_class <- sample(idx_class, size = length(idx_class),
-                                 replace = TRUE)
-        idx_boot <- c(idx_boot, idx_boot_class)
-      }
-
-      data_boot <- data1ZI[idx_boot, ]
-      group_boot <- group[idx_boot]
-
-      res_b <- codabiocom::calcAUClr(
-        data = data_boot,
-        group = group_boot,
-        cores = cores,  # usar todos los núcleos dentro
-        X = X,
-        conf.level = conf.level,
-        method = method,
-        rho = rho
-      )
-
-      M_b <- res_b$AUC[order_original, order_original]
-
-      assoc_b <- numeric(maxrow)
-      for (m in 1:maxrow) {
-        assoc_b[m] <- sum(M_b[1:m, 1:m]) / (m^2 - m)
-      }
-      assoc_b[1] <- NA
-      assoc_boot[b, ] <- assoc_b
-    }
-
-    # Estadística bootstrap
-    assoc <- colMeans(assoc_boot, na.rm = TRUE)
-    assoc[1] <- NA
-    var_assoc <- apply(assoc_boot, 2, var, na.rm = TRUE)
-    CISup <- apply(assoc_boot, 2, quantile, probs = (1-conf.level)/2, na.rm = TRUE)
-    CIInf <- apply(assoc_boot, 2, quantile, probs = (1 - conf.level)/2, na.rm = TRUE)
-    maxim <- which.max(assoc)
-
-    MTemp <- M_init
-    VTemp <- matrix(NA, nrow = ncol(M_init), ncol = ncol(M_init))
-
-    LRS <- list(
-      max_log_ratio = colnames(M_init)[which(M_init == max(abs(M_init)),
-                                             arr.ind = TRUE)[(2:1)]],
-      names_max_log_ratio = colnames(data1ZI)[as.numeric(colnames(M_init)[which(M_init == max(abs(M_init)),
-                                                                             arr.ind = TRUE)[(2:1)]])],
-      order_importance = order_original,
-      name_most_import_variables = colnames(data1ZI)[order_original[1:maxrow]],
-      association_logratio_y = M_init
-    )
-  }
   return(list(
     dataImp = data1ZI,
     OTUS = data.frame(
