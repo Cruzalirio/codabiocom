@@ -60,21 +60,26 @@ combine_fun <- function(...) {
 #'
 #' @keywords internal
 var_separability_index <- function(V_matrix, max_k = ncol(V_matrix), rho = 0.1) {
+  # Inicializar vector de varianzas
   var_vec <- numeric(max_k)
+  var_vec[1] <- NA
 
+  # Precalcular la matriz de desviaciones
+  sqrt_V <- sqrt(V_matrix)
+  V_upper <- V_matrix
+  V_upper[lower.tri(V_upper, diag = TRUE)] <- 0
+  sqrt_V_upper <- sqrt_V
+  sqrt_V_upper[lower.tri(sqrt_V_upper, diag = TRUE)] <- 0
+
+  # Iterar de manera vectorizada
   for (k in 2:max_k) {
-    V_sub <- V_matrix[1:k, 1:k]
-    var_pairs <- V_sub[lower.tri(V_sub)]
-
-    S1 <- sum(var_pairs)        # sum of variances
-    S  <- sum(sqrt(var_pairs))  # sum of standard deviations
-
+    tri_idx <- upper.tri(V_matrix[1:k, 1:k])
+    var_pairs <- V_matrix[1:k, 1:k][tri_idx]
+    S1 <- sum(var_pairs)
+    S <- sum(sqrt_V[1:k, 1:k][tri_idx])
     coef <- (2 / (k * (k - 1)))^2
-
     var_vec[k] <- coef * (S1 + rho * (S^2 - S1))
   }
-
-  var_vec[1] <- NA
 
   return(var_vec)
 }

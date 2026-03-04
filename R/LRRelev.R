@@ -40,28 +40,37 @@
 
 
 
-LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
-                     cores=NULL, X=NULL, conf.level = 0.95,
-                     method = c("hanley", "delong"),
-                     rho = 0.1){
-  Misery <- as.vector(which(colSums(data) <= threshold))
-  if (length(Misery) > 0) {
-    data1 <- data[, -Misery]
-    taxa1 <- taxa[-Misery]
-    otus1 <- otus[-Misery]
+LRRelev <- function(data, sample, group, taxa, otus,
+                    threshold = 2,
+                    cores = NULL, X = NULL,
+                    conf.level = 0.95,
+                    method = c("hanley", "delong"),
+                    rho = 0.1) {
+
+  method <- match.arg(method)
+  group <- as.factor(group)
+
+  # --------------------------------------------------
+  # 1️⃣ Filtrar OTUs con bajo conteo
+  # --------------------------------------------------
+  lowOTUs <- which(colSums(data) <= threshold)
+  if(length(lowOTUs) > 0){
+    data1 <- data[, -lowOTUs, drop = FALSE]
+    taxa1 <- taxa[-lowOTUs]
+    otus1 <- otus[-lowOTUs]
   } else {
     data1 <- data
     taxa1 <- taxa
     otus1 <- otus
   }
 
-  # Delete OTUs that appear in only one sample
-  hit <- function(x) { min(c(x, 1)) }
-  data0 <- as.matrix(data1)
-  data0[] <- vapply(data0, hit, numeric(1))
-  uniqueOTUs <- which(colSums(data0) == 1)
-  if (length(uniqueOTUs) > 0) {
-    data2 <- data1[, -uniqueOTUs]
+  # --------------------------------------------------
+  # 2️⃣ Eliminar OTUs presentes solo en una muestra
+  # --------------------------------------------------
+  data0 <- pmax(data1, 1)
+  uniqueOTUs <- which(colSums(data0 == 1) == nrow(data0))
+  if(length(uniqueOTUs) > 0){
+    data2 <- data1[, -uniqueOTUs, drop = FALSE]
     taxa2 <- taxa1[-uniqueOTUs]
     otus2 <- otus1[-uniqueOTUs]
   } else {
@@ -70,67 +79,91 @@ LRRelev <- function (data, sample, group, taxa, otus, threshold=2,
     otus2 <- otus1
   }
 
-  # Zero-imputation
-  if(sum(data2==0)>0){
-  data1ZI <- zCompositions::cmultRepl(
-    data2, method = "GBM", output = "p-counts",
-    suppress.print = TRUE, z.warning = 0.99
-  )}else{
-    data1ZI <- data2
+  # --------------------------------------------------
+  # 3️⃣ Imputar ceros
+  # --------------------------------------------------
+  if(sum(data2 == 0) > 0){
+    data_imp <- zCompositions::cmultRepl(
+      data2, method = "GBM",
+      output = "p-counts",
+      suppress.print = TRUE, z.warning = 0.99
+    )
+  } else {
+    data_imp <- data2
   }
-    # Calculate AUC and VAR matrices
-    res <- codabiocom::calcAUClr(data= data1ZI, group = group, cores = cores,
-                                 X=X,conf.level = conf.level,
-                                 method = method)
 
-    # Order OTUs by AUC importance
-    o <- order(colSums(abs(res$AUC)), decreasing = TRUE)
-    M <- res$AUC[o, o]
-    V <- res$VAR[o, o]
+  # --------------------------------------------------
+  # 4️⃣ Calcular matrices AUC y VAR usando calcAUClr
+  # --------------------------------------------------
+  res <- calcAUClr(
+    data = data_imp,
+    group = group,
+    cores = cores,
+    X = X,
+    conf.level = conf.level,
+    method = method,
+    rho = rho
+  )
 
-    MTemp <- M
-    VTemp <- V
+  AUCmat <- res$AUC
+  VARmat <- res$VAR
 
-    maxrow <- ncol(M)
-    colnames(M) <- o
-    rownames(M) <- o
-    colnames(V) <- o
-    rownames(V) <- o
+  # --------------------------------------------------
+  # 5️⃣ Ordenar OTUs por importancia
+  # --------------------------------------------------
+  # AUCmat_sparse solo tiene triángulo superior
+  p <- ncol(AUCmat)
+  sum_abs_auc <- numeric(p)
 
-    LRS <- list(max_log_ratio = colnames(M)[which(M == max(abs(M)),
-                                                  arr.ind = TRUE)[(2:1)]],
-                names_max_log_ratio = colnames(data1ZI)[as.numeric(colnames(M)[which(M == max(abs(M)),
-                                                                                  arr.ind = TRUE)[(2:1)]])],
-                order_importance = o,
-                name_most_import_variables = colnames(data1ZI)[o[1:maxrow]],
-                association_logratio_y = M)
+  # Para cada columna, sumar los valores del triángulo superior + valores que serían del inferior
+  for (j in 1:p) {
+    # triángulo superior
+    sum_upper <- sum(abs(AUCmat[1:j-1, j]))
+    # triángulo inferior: los valores en fila j, columnas j+1:p
+    sum_lower <- sum(abs(AUCmat[j, (min(j+1,p)):p]))
 
-    assoc <- rep(0, ncol(data1ZI))
-    var_assoc <- rep(0, ncol(data1ZI))
-    for (m in 1:ncol(data1ZI)) {
-      assoc[m] <- sum(M[1:m, 1:m]) / (m^2 - m)
-    }
-    assoc[1] <- NA
-    var_assoc <- var_separability_index(V, max_k = maxrow, rho = rho)
+    sum_abs_auc[j] <- sum_upper + sum_lower
+  }
 
-    CISup <- assoc + qnorm((1+conf.level)/2) * sqrt(var_assoc)
-    CIInf <- assoc - qnorm((1+conf.level)/2) * sqrt(var_assoc)
-    maxim <- which.max(assoc)
+
+  order_imp <- order(sum_abs_auc, decreasing = TRUE)
+
+
+  # p = número de OTUs
+  assoc <- numeric(p)
+  assoc[1] <- NA
+
+  var_assoc <- numeric(p)
+  var_assoc[1] <- NA
+
+  for(k in 2:p){
+    idx_k <- order_imp[1:k]
+
+    A_sub <- AUCmat[idx_k, idx_k, drop=FALSE]
+    V_sub <- VARmat[idx_k, idx_k, drop=FALSE]
+
+    # assoc = promedio triángulo superior
+    tri_idx <- which(upper.tri(A_sub))
+    assoc[k] <- mean(A_sub[tri_idx])
+
+    var_assoc[k] <- var_separability_index(V_sub, max_k = k, rho = rho)[k]
+  }
+
+
+  # --------------------------------------------------
   return(list(
-    dataImp = data1ZI,
+    dataImp = data_imp,
     OTUS = data.frame(
-      otus = otus2[LRS$order_importance],
+      otus = otus2[order_imp],
       assoc = assoc,
-      assoc_var = var_assoc,
-      ciLower = CIInf,
-      ciUpper = CISup),
-    Misery = otus[Misery],
+      assoc_var = var_assoc
+    ),
+    Misery = otus[lowOTUs],
     uniqueOTUS = otus1[uniqueOTUs],
-    AUCs = MTemp,
-    VARs = VTemp,
-    OTUSRelev = otus2[LRS$order_importance[1:maxim]]
+    AUCs = AUCmat,
+    VARs = VARmat,
+    OTUSRelev = otus2[order_imp[which.max(assoc)]]
   ))
 }
-
 
 
