@@ -67,8 +67,8 @@ calcAUClr <- function(data, group, cores = NULL, X = NULL,
   # --------------------------------------------------
   # 2️⃣ Inicializar matrices sparse solo triángulo superior
   # --------------------------------------------------
-  AUCmat <- matrix(0, p, p, sparse = TRUE)
-  VARmat <- matrix(0, p, p, sparse = TRUE)
+  AUCmat <- matrix(0, p, p)
+  VARmat <- matrix(0, p, p)
 
   # --------------------------------------------------
   # 3️⃣ Configurar cluster multiplataforma
