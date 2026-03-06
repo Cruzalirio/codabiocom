@@ -109,61 +109,13 @@ LRRelev <- function(data, sample, group, taxa, otus,
   VARmat <- res$VAR
 
   # --------------------------------------------------
-  # 5️⃣ Ordenar OTUs por importancia
-  # --------------------------------------------------
-  # AUCmat_sparse solo tiene triángulo superior
-  p <- ncol(AUCmat)
-  sum_abs_auc <- numeric(p)
-
-  # Para cada columna, sumar los valores del triángulo superior + valores que serían del inferior
-  for (j in 1:p) {
-    # triángulo superior
-    sum_upper <- sum(abs(AUCmat[1:j-1, j]))
-    # triángulo inferior: los valores en fila j, columnas j+1:p
-    sum_lower <- sum(abs(AUCmat[j, (min(j+1,p)):p]))
-
-    sum_abs_auc[j] <- sum_upper + sum_lower
-  }
-
-
-  order_imp <- order(sum_abs_auc, decreasing = TRUE)
-
-
-  # p = número de OTUs
-  assoc <- numeric(p)
-  assoc[1] <- NA
-
-  var_assoc <- numeric(p)
-  var_assoc[1] <- NA
-
-  for(k in 2:p){
-    idx_k <- order_imp[1:k]
-
-    A_sub <- AUCmat[idx_k, idx_k, drop=FALSE]
-    V_sub <- VARmat[idx_k, idx_k, drop=FALSE]
-
-    # assoc = promedio triángulo superior
-    tri_idx <- which(upper.tri(A_sub))
-    assoc[k] <- mean(A_sub[tri_idx])
-
-    var_assoc[k] <- var_separability_index(V_sub, max_k = k, rho = rho)[k]
-  }
-
-
-  # --------------------------------------------------
   return(list(
     dataImp = data_imp,
-    OTUS = data.frame(
-      otus = otus2[order_imp],
-      assoc = assoc,
-      assoc_var = var_assoc
-    ),
     Misery = otus[lowOTUs],
     uniqueOTUS = otus1[uniqueOTUs],
     AUCs = AUCmat,
     VARs = VARmat,
-    OTUSRelev = otus2[order_imp[which.max(assoc)]]
-  ))
+    OTUS2 = otus2))
 }
 
 
