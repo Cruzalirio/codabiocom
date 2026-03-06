@@ -105,17 +105,51 @@ LRRelev <- function(data, sample, group, taxa, otus,
     rho = rho
   )
 
-  AUCmat <- res$AUC
-  VARmat <- res$VAR
+  A <- Matrix::forceSymmetric(res$AUC, uplo="U")
+  V <- Matrix::forceSymmetric(res$VAR, uplo="U")
+  SC <- Matrix::colSums(A)
 
+  idx <- order(SC, decreasing = TRUE)
+  p <- length(idx)
+
+  assoc <- numeric(p)
+  assoc_var <- numeric(p)
+  assoc[1] <- NA
+  assoc_var[1] <- NA
+
+  sumA <- sumV <- sumS <- 0
+
+  for(k in 2:p){
+
+    # columnas reordenadas SIN copiar la matriz completa
+    col_k <- idx[k]
+    idx_prev <- idx[1:(k-1)]
+
+    newA <- A[idx_prev, col_k]
+    newV <- V[idx_prev, col_k]
+
+    sumA <- sumA + sum(newA)
+    sumV <- sumV + sum(newV)
+    sumS <- sumS + sum(sqrt(newV))
+
+    assoc[k] <- (2/(k*(k-1))) * sumA
+    coef <- (2/(k*(k-1)))^2
+    assoc_var[k] <- coef * (sumV + 0.1*(sumS^2 - sumV))
+   }
+
+  knee <- detect_knee_piecewise(assoc)
   # --------------------------------------------------
   return(list(
     dataImp = data_imp,
+    OTUS = data.frame(otus = otus2[idx],assoc = assoc,
+                      assoc_var = assoc_var),
     Misery = otus[lowOTUs],
     uniqueOTUS = otus1[uniqueOTUs],
-    AUCs = AUCmat,
-    VARs = VARmat,
-    OTUS2 = otus2))
+    AUCs = A,
+    VARs = V,
+    OTUSRelevMin = otus2[idx[1:which.max(assoc)]],
+    OTUSRelevMax = otus2[idx[1:knee]]
+  ))
 }
 
 

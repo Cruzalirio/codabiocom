@@ -55,13 +55,18 @@ calcAUClr <- function(data, group, cores = NULL, X = NULL,
     Xmat <- as.matrix(X)
     if(C > 2) {
       cvfit <- glmnet::cv.glmnet(x = Xmat, y = group, family = "multinomial")
-      prob_X <- stats::predict(cvfit, newx = Xmat, s = "lambda.1se", type = "response")[,,1]
+      prob_X <- stats::predict(cvfit, newx = Xmat, s = "lambda.1se")[,,1]
     } else {
       cvfit <- glmnet::cv.glmnet(x = Xmat, y = group, family = "binomial")
-      prob_X <- stats::predict(cvfit, newx = Xmat, s = "lambda.1se", type = "response")[,1]
+      prob_X <- stats::predict(cvfit, newx = Xmat, s = "lambda.1se")[,1]
     }
   } else {
-    prob_X <- NULL
+    if(C==2){
+      prob_X <- rep(0, nrow(data))
+    }else{
+    prob_X <- matrix(0, ncol=C, nrow=nrow(data))
+    colnames(prob_X) <- levels(group)
+    }
   }
 
   # --------------------------------------------------
@@ -94,7 +99,7 @@ calcAUClr <- function(data, group, cores = NULL, X = NULL,
       score <- logdata[, i] - logdata[, j]
 
       if (C == 2) {
-        roc_obj <- pROC::roc(group, score, quiet = TRUE)
+        roc_obj <- pROC::roc(group, score + prob_X, quiet = TRUE)
         auc_val <- as.numeric(pROC::auc(roc_obj))
 
         if (method == "hanley") {
@@ -117,7 +122,9 @@ calcAUClr <- function(data, group, cores = NULL, X = NULL,
         for (k in 1:ncol(class_pairs)) {
           idx <- group %in% class_pairs[,k]
           g_bin <- droplevels(group[idx])
-          roc_bin <- pROC::roc(g_bin, score[idx], quiet = TRUE)
+          roc_bin <- pROC::roc(g_bin, score[idx]+
+                                 prob_X[idx,class_pairs[,k][1]]-
+                                 prob_X[idx,class_pairs[,k][2]], quiet = TRUE)
           auc_bin <- as.numeric(pROC::auc(roc_bin))
           auc_pairs[k] <- auc_bin
 
