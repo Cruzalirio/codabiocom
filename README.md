@@ -3,7 +3,7 @@
 **codabiocom** is an R package implementing compositional relevance and association methodologies for microbiome studies.  
 It provides tools to identify relevant OTUs, compute association indices, and benchmark model performance across simulation settings.
 
-## 📦 Installation
+## Installation
 
 You can install the development version from GitHub:
 
@@ -42,7 +42,7 @@ output1 <- LRRelev(data = x_HIV, sample = rownames(x_HIV),
 ```
 
 
-## 📄 Documentation
+## Documentation
 
 Full documentation and function reference are available in the `./man/` directory or via:
 
