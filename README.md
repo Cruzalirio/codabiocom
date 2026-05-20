@@ -12,7 +12,7 @@ You can install the development version from GitHub:
 devtools::install_github("Cruzalirio/codabiocom")
 ```
 
-## 🚀 Features
+##  Features
 
 - Compute **association index** for compositional microbiome data  
 - Identify **top relevant OTUs** under different covariate-adjusted models  
@@ -25,7 +25,7 @@ devtools::install_github("Cruzalirio/codabiocom")
 - Methods to compare **relevance stability** across models  
 - Helper functions for processing output and generating summary tables
 
-## 🧬 Example Workflow
+##  Example Workflow
 
 ```r
 library(codabiocom)
@@ -47,17 +47,18 @@ output1 <- LRRelev(data = x_HIV, sample = rownames(x_HIV),
 Full documentation and function reference are available in the `./man/` directory or via:
 
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome!  
 Please open an issue or submit a pull request with improvements.
 
 
-## 👨‍💻 Authors
+##  Authors
 
 Nelson Cruz
 Ricardo Alberich
 Irene García
 Arnau Mir
+Raquel Fernandez
 Universitat de les Illes Balears  
 2026
